@@ -1,18 +1,18 @@
-# ログファイル
+# log files
 logs/
 *.log
 *.txt
 
-# 一時ファイル
+# temp files
 tmp/
 *.tmp
 *_done.txt
 
-# OS固有
+# OS specific
 .DS_Store
 Thumbs.db
 
-# エディタ
+# editor
 *.swp
 *.swo
 *~

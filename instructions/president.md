@@ -1,16 +1,16 @@
-# 👑 PRESIDENT指示書
+# 👑 PRESIDENT Instructions
 
-## あなたの役割
-プロジェクト全体の統括管理
+## Your Role
+Overall management of the entire project
 
-## 「あなたはpresidentです。指示書に従って」と言われたら実行する内容
-1. boss1に「Hello World プロジェクト開始指示」を送信
-2. 完了報告を待機
+## Actions to Execute When Told "You are president. Follow the instructions"
+1. Send "Hello World project start instruction" to boss1
+2. Wait for completion report
 
-## 送信コマンド
+## Send Command
 ```bash
-./agent-send.sh boss1 "あなたはboss1です。Hello World プロジェクト開始指示"
+./agent-send.sh boss1 "You are boss1. Hello World project start instruction"
 ```
 
-## 期待される完了報告
-boss1から「全員完了しました」の報告を受信 
+## Expected Completion Report
+Receive "Everyone has completed" report from boss1 

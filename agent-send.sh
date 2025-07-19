@@ -1,35 +1,35 @@
 #!/bin/bash
 
-# 🚀 Agent間メッセージ送信スクリプト
+# 🚀 Inter-Agent Message Sending Script
 
-# tmuxのbase-indexとpane-base-indexを動的に取得
+# Dynamically get tmux base-index and pane-base-index
 get_tmux_indices() {
     local session="$1"
     local window_index=$(tmux show-options -t "$session" -g base-index 2>/dev/null | awk '{print $2}')
     local pane_index=$(tmux show-options -t "$session" -g pane-base-index 2>/dev/null | awk '{print $2}')
 
-    # デフォルト値
+    # Default values
     window_index=${window_index:-0}
     pane_index=${pane_index:-0}
 
     echo "$window_index $pane_index"
 }
 
-# エージェント→tmuxターゲット マッピング
+# Agent to tmux target mapping
 get_agent_target() {
     case "$1" in
         "president") echo "president" ;;
         "boss1"|"worker1"|"worker2"|"worker3")
-            # multiagentセッションのindexを動的に取得
+            # Dynamically get multiagent session index
             if tmux has-session -t multiagent 2>/dev/null; then
                 local indices=($(get_tmux_indices multiagent))
                 local window_index=${indices[0]}
                 local pane_index=${indices[1]}
 
-                # window名で取得（base-indexに依存しない）
+                # Get by window name (independent of base-index)
                 local window_name="agents"
 
-                # pane番号を計算
+                # Calculate pane number
                 case "$1" in
                     "boss1") echo "multiagent:$window_name.$((pane_index))" ;;
                     "worker1") echo "multiagent:$window_name.$((pane_index + 1))" ;;
@@ -46,58 +46,58 @@ get_agent_target() {
 
 show_usage() {
     cat << EOF
-🤖 Agent間メッセージ送信
+🤖 Inter-Agent Message Sending
 
-使用方法:
-  $0 [エージェント名] [メッセージ]
+Usage:
+  $0 [agent_name] [message]
   $0 --list
 
-利用可能エージェント:
-  president - プロジェクト統括責任者
-  boss1     - チームリーダー  
-  worker1   - 実行担当者A
-  worker2   - 実行担当者B
-  worker3   - 実行担当者C
+Available agents:
+  president - Project Overall Manager
+  boss1     - Team Leader  
+  worker1   - Execution Staff A
+  worker2   - Execution Staff B
+  worker3   - Execution Staff C
 
-使用例:
-  $0 president "指示書に従って"
-  $0 boss1 "Hello World プロジェクト開始指示"
-  $0 worker1 "作業完了しました"
+Examples:
+  $0 president "Follow the instructions"
+  $0 boss1 "Hello World project start instruction"
+  $0 worker1 "Work completed"
 EOF
 }
 
-# エージェント一覧表示
+# Display agent list
 show_agents() {
-    echo "📋 利用可能なエージェント:"
+    echo "📋 Available agents:"
     echo "=========================="
 
-    # presidentセッション確認
+    # Check president session
     if tmux has-session -t president 2>/dev/null; then
-        echo "  president → president       (プロジェクト統括責任者)"
+        echo "  president → president       (Project Overall Manager)"
     else
-        echo "  president → [未起動]        (プロジェクト統括責任者)"
+        echo "  president → [not started]   (Project Overall Manager)"
     fi
 
-    # multiagentセッション確認
+    # Check multiagent session
     if tmux has-session -t multiagent 2>/dev/null; then
         local boss1_target=$(get_agent_target "boss1")
         local worker1_target=$(get_agent_target "worker1")
         local worker2_target=$(get_agent_target "worker2")
         local worker3_target=$(get_agent_target "worker3")
 
-        echo "  boss1     → ${boss1_target:-[エラー]}  (チームリーダー)"
-        echo "  worker1   → ${worker1_target:-[エラー]}  (実行担当者A)"
-        echo "  worker2   → ${worker2_target:-[エラー]}  (実行担当者B)"
-        echo "  worker3   → ${worker3_target:-[エラー]}  (実行担当者C)"
+        echo "  boss1     → ${boss1_target:-[error]}     (Team Leader)"
+        echo "  worker1   → ${worker1_target:-[error]}   (Execution Staff A)"
+        echo "  worker2   → ${worker2_target:-[error]}   (Execution Staff B)"
+        echo "  worker3   → ${worker3_target:-[error]}   (Execution Staff C)"
     else
-        echo "  boss1     → [未起動]        (チームリーダー)"
-        echo "  worker1   → [未起動]        (実行担当者A)"
-        echo "  worker2   → [未起動]        (実行担当者B)"
-        echo "  worker3   → [未起動]        (実行担当者C)"
+        echo "  boss1     → [not started]   (Team Leader)"
+        echo "  worker1   → [not started]   (Execution Staff A)"
+        echo "  worker2   → [not started]   (Execution Staff B)"
+        echo "  worker3   → [not started]   (Execution Staff C)"
     fi
 }
 
-# ログ記録
+# Log recording
 log_send() {
     local agent="$1"
     local message="$2"
@@ -107,47 +107,47 @@ log_send() {
     echo "[$timestamp] $agent: SENT - \"$message\"" >> logs/send_log.txt
 }
 
-# メッセージ送信
+# Send message
 send_message() {
     local target="$1"
     local message="$2"
     
-    echo "📤 送信中: $target ← '$message'"
+    echo "📤 Sending: $target ← '$message'"
     
-    # Claude Codeのプロンプトを一度クリア
+    # Clear Claude Code prompt once
     tmux send-keys -t "$target" C-c
     sleep 0.3
     
-    # メッセージ送信
+    # Send message
     tmux send-keys -t "$target" "$message"
     sleep 0.1
     
-    # エンター押下
+    # Press enter
     tmux send-keys -t "$target" C-m
     sleep 0.5
 }
 
-# ターゲット存在確認
+# Check target existence
 check_target() {
     local target="$1"
     local session_name="${target%%:*}"
     
     if ! tmux has-session -t "$session_name" 2>/dev/null; then
-        echo "❌ セッション '$session_name' が見つかりません"
+        echo "❌ Session '$session_name' not found"
         return 1
     fi
     
     return 0
 }
 
-# メイン処理
+# Main process
 main() {
     if [[ $# -eq 0 ]]; then
         show_usage
         exit 1
     fi
     
-    # --listオプション
+    # --list option
     if [[ "$1" == "--list" ]]; then
         show_agents
         exit 0
@@ -161,28 +161,28 @@ main() {
     local agent_name="$1"
     local message="$2"
     
-    # エージェントターゲット取得
+    # Get agent target
     local target
     target=$(get_agent_target "$agent_name")
     
     if [[ -z "$target" ]]; then
-        echo "❌ エラー: 不明なエージェント '$agent_name'"
-        echo "利用可能エージェント: $0 --list"
+        echo "❌ Error: Unknown agent '$agent_name'"
+        echo "Available agents: $0 --list"
         exit 1
     fi
     
-    # ターゲット確認
+    # Check target
     if ! check_target "$target"; then
         exit 1
     fi
     
-    # メッセージ送信
+    # Send message
     send_message "$target" "$message"
     
-    # ログ記録
+    # Log recording
     log_send "$agent_name" "$message"
     
-    echo "✅ 送信完了: $agent_name に '$message'"
+    echo "✅ Send completed: '$message' to $agent_name"
     
     return 0
 }

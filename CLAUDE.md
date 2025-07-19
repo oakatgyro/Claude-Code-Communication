@@ -1,19 +1,19 @@
 # Agent Communication System
 
-## エージェント構成
-- **PRESIDENT** (別セッション): 統括責任者
-- **boss1** (multiagent:agents): チームリーダー
-- **worker1,2,3** (multiagent:agents): 実行担当
+## Agent Configuration
+- **PRESIDENT** (separate session): Overall Manager
+- **boss1** (multiagent:agents): Team Leader
+- **worker1,2,3** (multiagent:agents): Execution Staff
 
-## あなたの役割
+## Your Role
 - **PRESIDENT**: @instructions/president.md
 - **boss1**: @instructions/boss.md
 - **worker1,2,3**: @instructions/worker.md
 
-## メッセージ送信
+## Message Sending
 ```bash
-./agent-send.sh [相手] "[メッセージ]"
+./agent-send.sh [recipient] "[message]"
 ```
 
-## 基本フロー
+## Basic Flow
 PRESIDENT → boss1 → workers → boss1 → PRESIDENT 

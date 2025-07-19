@@ -1,165 +1,165 @@
 # 🤖 Tmux Multi-Agent Communication Demo
 
-Agent同士がやり取りするtmux環境のデモシステム
+A demo system for agent-to-agent communication in a tmux environment.
 
-**📖 Read this in other languages:** [English](README-en.md)
+**📖 Read this in other languages:** [日本語](README.md)
 
-## 🎯 デモ概要
+## 🎯 Demo Overview
 
-PRESIDENT → BOSS → Workers の階層型指示システムを体感できます
+Experience a hierarchical command system: PRESIDENT → BOSS → Workers
 
-### 👥 エージェント構成
+### 👥 Agent Configuration
 
 ```
-📊 PRESIDENT セッション (1ペイン)
-└── PRESIDENT: プロジェクト統括責任者
+📊 PRESIDENT Session (1 pane)
+└── PRESIDENT: Project Manager
 
-📊 multiagent セッション (4ペイン)  
-├── boss1: チームリーダー
-├── worker1: 実行担当者A
-├── worker2: 実行担当者B
-└── worker3: 実行担当者C
+📊 multiagent Session (4 panes)  
+├── boss1: Team Leader
+├── worker1: Worker A
+├── worker2: Worker B
+└── worker3: Worker C
 ```
 
-## 🚀 クイックスタート
+## 🚀 Quick Start
 
-### 0. リポジトリのクローン
+### 0. Clone Repository
 
 ```bash
 git clone https://github.com/nishimoto265/Claude-Code-Communication.git
 cd Claude-Code-Communication
 ```
 
-### 1. tmux環境構築
+### 1. Setup tmux Environment
 
-⚠️ **注意**: 既存の `multiagent` と `president` セッションがある場合は自動的に削除されます。
+⚠️ **Warning**: Existing `multiagent` and `president` sessions will be automatically removed.
 
 ```bash
 ./setup.sh
 ```
 
-### 2. セッションアタッチ
+### 2. Attach Sessions
 
 ```bash
-# マルチエージェント確認
+# Check multiagent session
 tmux attach-session -t multiagent
 
-# プレジデント確認（別ターミナルで）
+# Check president session (in another terminal)
 tmux attach-session -t president
 ```
 
-### 3. Claude Code起動
+### 3. Launch Claude Code
 
-**手順1: President認証**
+**Step 1: President Authentication**
 ```bash
-# まずPRESIDENTで認証を実施
+# First, authenticate in PRESIDENT session
 tmux send-keys -t president 'claude' C-m
 ```
-認証プロンプトに従って許可を与えてください。
+Follow the authentication prompt to grant permission.
 
-**手順2: Multiagent一括起動**
+**Step 2: Launch All Multiagent Sessions**
 ```bash
-# 認証完了後、multiagentセッションを一括起動
+# After authentication, launch all multiagent sessions at once
 for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude' C-m; done
 ```
 
-### 4. デモ実行
+### 4. Run Demo
 
-PRESIDENTセッションで直接入力：
+Type directly in PRESIDENT session:
 ```
-あなたはpresidentです。指示書に従って
+You are the president. Follow the instructions.
 ```
 
-## 📜 指示書について
+## 📜 About Instructions
 
-各エージェントの役割別指示書：
+Role-specific instruction files for each agent:
 - **PRESIDENT**: `instructions/president.md`
 - **boss1**: `instructions/boss.md` 
 - **worker1,2,3**: `instructions/worker.md`
 
-**Claude Code参照**: `CLAUDE.md` でシステム構造を確認
+**Claude Code Reference**: Check system structure in `CLAUDE.md`
 
-**要点:**
-- **PRESIDENT**: 「あなたはpresidentです。指示書に従って」→ boss1に指示送信
-- **boss1**: PRESIDENT指示受信 → workers全員に指示 → 完了報告
-- **workers**: Hello World実行 → 完了ファイル作成 → 最後の人が報告
+**Key Points:**
+- **PRESIDENT**: "You are the president. Follow the instructions." → Send command to boss1
+- **boss1**: Receive PRESIDENT command → Send instructions to all workers → Report completion
+- **workers**: Execute Hello World → Create completion files → Last worker reports
 
-## 🎬 期待される動作フロー
+## 🎬 Expected Operation Flow
 
 ```
-1. PRESIDENT → boss1: "あなたはboss1です。Hello World プロジェクト開始指示"
-2. boss1 → workers: "あなたはworker[1-3]です。Hello World 作業開始"  
-3. workers → ./tmp/ファイル作成 → 最後のworker → boss1: "全員作業完了しました"
-4. boss1 → PRESIDENT: "全員完了しました"
+1. PRESIDENT → boss1: "You are boss1. Start Hello World project"
+2. boss1 → workers: "You are worker[1-3]. Start Hello World task"  
+3. workers → Create ./tmp/ files → Last worker → boss1: "All tasks completed"
+4. boss1 → PRESIDENT: "All completed"
 ```
 
-## 🔧 手動操作
+## 🔧 Manual Operations
 
-### agent-send.shを使った送信
+### Using agent-send.sh
 
 ```bash
-# 基本送信
-./agent-send.sh [エージェント名] [メッセージ]
+# Basic sending
+./agent-send.sh [agent_name] [message]
 
-# 例
-./agent-send.sh boss1 "緊急タスクです"
-./agent-send.sh worker1 "作業完了しました"
-./agent-send.sh president "最終報告です"
+# Examples
+./agent-send.sh boss1 "Urgent task"
+./agent-send.sh worker1 "Task completed"
+./agent-send.sh president "Final report"
 
-# エージェント一覧確認
+# Check agent list
 ./agent-send.sh --list
 ```
 
-## 🧪 確認・デバッグ
+## 🧪 Verification & Debug
 
-### ログ確認
+### Log Checking
 
 ```bash
-# 送信ログ確認
+# Check send logs
 cat logs/send_log.txt
 
-# 特定エージェントのログ
+# Check specific agent logs
 grep "boss1" logs/send_log.txt
 
-# 完了ファイル確認
+# Check completion files
 ls -la ./tmp/worker*_done.txt
 ```
 
-### セッション状態確認
+### Session Status Check
 
 ```bash
-# セッション一覧
+# List sessions
 tmux list-sessions
 
-# ペイン一覧
+# List panes
 tmux list-panes -t multiagent
 tmux list-panes -t president
 ```
 
-## 🔄 環境リセット
+## 🔄 Environment Reset
 
 ```bash
-# セッション削除
+# Delete sessions
 tmux kill-session -t multiagent
 tmux kill-session -t president
 
-# 完了ファイル削除
+# Delete completion files
 rm -f ./tmp/worker*_done.txt
 
-# 再構築（自動クリア付き）
+# Rebuild (with auto cleanup)
 ./setup.sh
 ```
 
 ---
 
-## 📄 ライセンス
+## 📄 License
 
-このプロジェクトは[MIT License](LICENSE)の下で公開されています。
+This project is licensed under the [MIT License](LICENSE).
 
-## 🤝 コントリビューション
+## 🤝 Contributing
 
-プルリクエストやIssueでのコントリビューションを歓迎いたします！
+Contributions via pull requests and issues are welcome!
 
 ---
 
-🚀 **Agent Communication を体感してください！** 🤖✨ 
+🚀 **Experience Agent Communication!** 🤖✨ 
