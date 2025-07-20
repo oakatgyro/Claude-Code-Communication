@@ -9,7 +9,10 @@ Overall management of the entire project
 
 ## Send Command
 ```bash
-./agent-send.sh boss1 "You are boss1. Hello World project start instruction"
+zellij -s multiagent action go-to-tab-name depertment
+zellij -s multiagent action move-focus up
+zellij -s multiagent action write-chars "You are boss1. Hello World project start instruction"
+zellij -s multiagent action write 13
 ```
 
 ## Expected Completion Report

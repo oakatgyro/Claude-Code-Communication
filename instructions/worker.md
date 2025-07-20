@@ -21,7 +21,10 @@ touch ./tmp/worker1_done.txt  # for worker1
 # Check everyone's completion
 if [ -f ./tmp/worker1_done.txt ] && [ -f ./tmp/worker2_done.txt ] && [ -f ./tmp/worker3_done.txt ]; then
     echo "Confirmed everyone's work completion (reporting as the last completer)"
-    ./agent-send.sh boss1 "Everyone has completed their work"
+    zellij -s multiagent action go-to-tab-name depertment
+    zellij -s multiagent action move-focus top
+    zellij -s multiagent action write-chars "Everyone has completed their work"
+    zellij -s multiagent action write 13
 else
     echo "Waiting for other workers to complete..."
 fi

@@ -2,8 +2,6 @@
 
 A demo system for agent-to-agent communication in a tmux environment.
 
-**📖 Read this in other languages:** [日本語](README.md)
-
 ## 🎯 Demo Overview
 
 Experience a hierarchical command system: PRESIDENT → BOSS → Workers
@@ -11,10 +9,10 @@ Experience a hierarchical command system: PRESIDENT → BOSS → Workers
 ### 👥 Agent Configuration
 
 ```
-📊 PRESIDENT Session (1 pane)
+📊 PRESIDENT Tab (1 pane)
 └── PRESIDENT: Project Manager
 
-📊 multiagent Session (4 panes)  
+📊 multiagent Tab (4 panes)  
 ├── boss1: Team Leader
 ├── worker1: Worker A
 ├── worker2: Worker B
@@ -30,40 +28,15 @@ git clone https://github.com/nishimoto265/Claude-Code-Communication.git
 cd Claude-Code-Communication
 ```
 
-### 1. Setup tmux Environment
+### 1. Setup zellij Environment
 
-⚠️ **Warning**: Existing `multiagent` and `president` sessions will be automatically removed.
-
-```bash
-./setup.sh
-```
-
-### 2. Attach Sessions
+⚠️ **Warning**: Existing `multiagent` sessions will be automatically removed.
 
 ```bash
-# Check multiagent session
-tmux attach-session -t multiagent
+zellij --layout default-layout.kdl
+```****
 
-# Check president session (in another terminal)
-tmux attach-session -t president
-```
-
-### 3. Launch Claude Code
-
-**Step 1: President Authentication**
-```bash
-# First, authenticate in PRESIDENT session
-tmux send-keys -t president 'claude' C-m
-```
-Follow the authentication prompt to grant permission.
-
-**Step 2: Launch All Multiagent Sessions**
-```bash
-# After authentication, launch all multiagent sessions at once
-for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude' C-m; done
-```
-
-### 4. Run Demo
+### 2. Run Demo
 
 Type directly in PRESIDENT session:
 ```
