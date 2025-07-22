@@ -1,0 +1,14 @@
+layout {
+    tab name="workers" hide_floating_panes=true split_direction="vertical" {
+        pane name="worker1" size="34%" command="claude" {
+            args "--dangerously-skip-permissions"
+        }
+        pane name="worker2" size="33%" command="claude" {
+            args "--dangerously-skip-permissions"
+        }
+        pane name="worker3" size="33%" command="claude" {
+            args "--dangerously-skip-permissions"
+        }
+    }
+}
+

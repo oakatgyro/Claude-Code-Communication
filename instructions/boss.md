@@ -1,4 +1,4 @@
-# 🎯 boss1 Instructions
+# 🎯 boss Instructions
 
 ## Your Role
 Overall management of team members
@@ -10,25 +10,20 @@ Overall management of team members
 
 ## Send Commands
 ```bash
-zellij -s multiagent action go-to-tab-name depertment
-zellij -s multiagent action move-focus up
+zellij -s workers action write-chars "You are worker1. Hello World work start"
+zellij -s workers action write 13
 
-zellij -s multiagent action move-focus down
-zellij -s multiagent action write-chars "You are worker1. Hello World work start"
-zellij -s multiagent action write 13
+zellij -s workers action focus-next-pane
+zellij -s workers action write-chars "You are worker2. Hello World work start"
+zellij -s workers action write 13
 
-zellij -s multiagent action move-focus right
-zellij -s multiagent action write-chars "You are worker2. Hello World work start"
-zellij -s multiagent action write 13
-
-zellij -s multiagent action move-focus right
-zellij -s multiagent action write-chars "You are worker2. Hello World work start"
-zellij -s multiagent action write 13
+zellij -s workers action focus-next-pane
+zellij -s workers action write-chars "You are worker3. Hello World work start"
+zellij -s workers action write 13
 
 # After receiving completion report from the last worker
-zellij -s multiagent action go-to-tab-name president
-zellij -s multiagent action write-chars "Everyone has completed"
-zellij -s multiagent action write 13
+zellij -s president action write-chars "Everyone has completed"
+zellij -s president action write 13
 ```
 
 ## Expected Report

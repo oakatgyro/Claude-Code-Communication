@@ -1,0 +1,10 @@
+layout {
+    tab name="president" focus=true hide_floating_panes=true {
+        pane name="president" focus=true command="claude" {
+            args "--dangerously-skip-permissions"
+        }
+        pane size=1 borderless=true  {
+            plugin location="zellij:status-bar"
+        }
+    }
+}
